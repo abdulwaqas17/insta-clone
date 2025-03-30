@@ -23,9 +23,11 @@ router.get('/login', function(req,res) {
 router.get('/feed',isLoggedIn, async function(req,res) { 
   // const posts1 = await postsModel.find();
   // console.log(posts1);
+  const userData = await userModel.findOne({username:req.session.passport.user})
   const posts = await postsModel.find().populate('user');
   console.log(posts);
-  res.render('feed', {footer:false , posts})
+  res.render('feed', {footer:false , posts, userData});
+  
 })
 
 router.get('/profile',isLoggedIn, async function(req,res) {
@@ -61,6 +63,31 @@ router.post("/post",isLoggedIn,upload.single('image'), async function(req,res){
   userData.posts.push(post._id);
   await userData.save();
   res.redirect("/feed")
+
+}) 
+
+router.get("/like/post/:id",isLoggedIn, async function(req,res){
+
+  const user = await userModel.findOne({username : req.session.passport.user});
+  const post = await postsModel.findOne({_id : req.params.id}); // require post mil gye gi is me
+
+  // if already like so remove it
+  if(post.likes.indexOf(user._id) === -1) {
+    post.likes.push(user._id);
+  } 
+  // if no like yet,So like it
+  else {
+
+    // post.likes.splice(khn se start krna h, kitnay delete krnay hn, kia add krna h)
+    post.likes.splice(post.likes.indexOf(user._id),1)
+
+  }
+
+  await post.save();
+
+  res.redirect('/feed')
+
+ 
 
 })
 

@@ -49,6 +49,7 @@
             <img data-postid="<%= post.id %>" class="postimg w-full h-full object-cover"
               src="/images/uploads/<%= post.picture %>" alt="">
           </div>
+
           <div class="options w-full px-4 flex justify-between items-center text-[1.4rem]">
             <div class="flex gap-3 mt-2">
               <% if(post.like.indexOf(user._id)===-1){ %>
@@ -65,6 +66,7 @@
                 <i data-postid="<%= post.id %>" class="save ri-bookmark-fill text-zinc-100"></i>
                 <% } %>
           </div>
+          
           <h3 class="likeval px-4 mt-2 text-sm leading-none tracking-tight">
             <%= post.like.length %> likes
           </h3>

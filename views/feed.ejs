@@ -43,6 +43,26 @@
         </div>
 
         <!-- some remove from here -->
+        <div class="options w-full px-4 flex justify-between items-center text-[1.4rem]">
+          <div class="flex gap-3 mt-2">
+          
+              <a href="/like/post/<%= post._id %>">
+                <% if(post.likes.includes(userData._id)) { %>
+                  <i class="heart ri-heart-3-fill text-red-500"></i>
+                  <% }  else { %>
+
+                    <i class="heart ri-heart-3-line"></i>
+
+                    <% } %>
+              </a>
+             
+                  <i class="ri-chat-3-line"></i>
+                  <i class="ri-share-circle-line"></i>
+          </div>
+          
+            <i data-postid="<%= post.id %>" class="save ri-bookmark-line"></i>
+            
+        </div>
 
         <h3 class="likeval px-4 mt-2 text-sm leading-none tracking-tight">
           <%= post.likes.length %> likes
