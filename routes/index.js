@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const upload = require('./multer');
-const postsModel = require('./posts')
+const postsModel = require('./posts');
+const storyModel = require('./story');
 
 var userModel = require('./users');
 const passport = require('passport');
@@ -23,10 +24,21 @@ router.get('/login', function(req,res) {
 router.get('/feed',isLoggedIn, async function(req,res) { 
   // const posts1 = await postsModel.find();
   // console.log(posts1);
-  const userData = await userModel.findOne({username:req.session.passport.user})
+  const userData = await userModel.findOne({username:req.session.passport.user});
+  // console.log(userData.stories[0]._id);
   const posts = await postsModel.find().populate('user');
-  console.log(posts);
-  res.render('feed', {footer:false , posts, userData});
+  if (userData.stories.length > 0) {
+
+  let stories = await storyModel.find({_id : {$ne : userData.stories[0]._id}}).populate('user');
+  res.render('feed', {footer:false , posts, stories, userData});
+
+  } else {
+    let stories = await storyModel.find().populate('user');
+    res.render('feed', {footer:false , posts, stories, userData});
+  }
+  // console.log(posts);
+  // console.log(stories);
+ 
   
 })
 
@@ -54,13 +66,49 @@ router.post("/post",isLoggedIn,upload.single('image'), async function(req,res){
 
   const userData = await userModel.findOne({username:req.session.passport.user});
 
-  const post = await postsModel.create({
-    picture : req.file.filename,
-    caption : req.body.caption,
-    user : userData._id
-  })
+  if(req.body.category === 'post') {
 
-  userData.posts.push(post._id);
+    const post = await postsModel.create({
+      picture : req.file.filename,
+      caption : req.body.caption,
+      user : userData._id
+    })
+
+    userData.posts.push(post._id); 
+
+  } else if (req.body.category === 'story') {
+    
+    // for first time story
+    if(userData.stories.length < 1) {
+      const story = await storyModel.create({
+        storyPic : req.file.filename,
+        caption : req.body.caption,
+        user : userData._id 
+      })
+
+      userData.stories.push(story._id);
+
+    } else {
+      const story = await storyModel.findOneAndUpdate(
+      {_id : userData.stories[0]._id},
+      {
+        storyPic : req.file.filename,
+        caption : req.body.caption,
+        user : userData._id
+      })
+
+      const storyIndex = userData.stories.findIndex(id => id.toString() === userData.stories[0]._id.toString());
+
+
+    userData.stories.splice(storyIndex, 1, story._id);
+
+
+      // userData.stories.splice( indexOf(userData.stories[0]._id.toSting()),1,story._id);
+    }
+
+    
+  }
+
   await userData.save();
   res.redirect("/feed")
 
@@ -178,7 +226,7 @@ router.post("/login",passport.authenticate("local", {
 router.get("/logout", function(req,res,next){
   req.logout(function(err) {
     if (err) { return next(err); }
-    res.redirect('/');
+    res.redirect('/login');
   });
 })
 

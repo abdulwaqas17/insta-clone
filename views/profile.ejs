@@ -5,6 +5,7 @@
         <h3 class="text-lg"><%= userData.username %></h3>
         <div class="icons flex gap-5">
           <a href="/upload"><i class="text-[1.4rem] ri-add-box-line"></i></a>
+          <a href="/logout"><i class="text-[1.4rem] ri-logout-box-line"></i></a>
           <i class="text-[1.4rem] ri-menu-line"></i>
         </div>
       </div>
@@ -17,7 +18,7 @@
         <div class="stats flex gap-5 items-center justify-between">
           <div class="flex flex-col items-center justify-center">
        
-            <h3>120</h3>
+            <h3><%= userData.posts.length %></h3>
             <h4>Posts</h4>
           </div>
           <div class="flex flex-col items-center justify-center">

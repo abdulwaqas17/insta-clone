@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 const storySchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user"
+    ref: "users"
   },
-  story: String,
+  storyPic: String,
+  caption: String,
   date: {
     type: Date,
     default: Date.now

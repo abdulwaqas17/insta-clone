@@ -75,6 +75,7 @@ let userSchema = mongoose.Schema({
   password : String,
   profileImage : String, // because q k hum img ka url store krty hn
   posts : [{type : mongoose.Schema.Types.ObjectId , ref : "posts"}], // srif post ki ides store hon gi is m
+  stories : [{type : mongoose.Schema.Types.ObjectId , ref : "stories"}]
 })
 
 
