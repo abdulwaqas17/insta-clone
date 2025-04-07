@@ -75,7 +75,29 @@ let userSchema = mongoose.Schema({
   password : String,
   profileImage : String, // because q k hum img ka url store krty hn
   posts : [{type : mongoose.Schema.Types.ObjectId , ref : "posts"}], // srif post ki ides store hon gi is m
-  stories : [{type : mongoose.Schema.Types.ObjectId , ref : "stories"}]
+  stories : [{type : mongoose.Schema.Types.ObjectId , ref : "stories"}],
+
+  // muje jis jis ne follow kia hwa h
+  followers: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user" 
+        } 
+      ],
+
+      // m ne jis jis ko follow kia hwa h
+      following: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "user" 
+        }
+      ],
+        saved: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "post" 
+    }
+  ]
 })
 
 

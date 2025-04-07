@@ -29,12 +29,13 @@ router.get('/feed',isLoggedIn, async function(req,res) {
   const posts = await postsModel.find().populate('user');
   if (userData.stories.length > 0) {
 
+    // $ne means is k ilawa sari a jyn
   let stories = await storyModel.find({_id : {$ne : userData.stories[0]._id}}).populate('user');
-  res.render('feed', {footer:false , posts, stories, userData});
+  res.render('feed', {footer:true , posts, stories, userData});
 
   } else {
     let stories = await storyModel.find().populate('user');
-    res.render('feed', {footer:false , posts, stories, userData});
+    res.render('feed', {footer:true , posts, stories, userData});
   }
   // console.log(posts);
   // console.log(stories);
@@ -97,9 +98,8 @@ router.post("/post",isLoggedIn,upload.single('image'), async function(req,res){
         user : userData._id
       })
 
-      const storyIndex = userData.stories.findIndex(id => id.toString() === userData.stories[0]._id.toString());
-
-
+    // in do lines ki sahyad need nhe h
+    const storyIndex = userData.stories.findIndex(id => id.toString() === userData.stories[0]._id.toString());
     userData.stories.splice(storyIndex, 1, story._id);
 
 
@@ -158,7 +158,7 @@ router.post('/update',upload.single('image'), async function(req,res) {
     // req.session.passport.user → Session se currently logged-in user ka username le raha hai.
     {username : req.session.passport.user},
     {
-      username : req.body.username,
+      username : req.body.username, 
       name : req.body.name,
       bio : req.body.bio
     },
@@ -209,6 +209,70 @@ router.post('/register', function(req,res,next){
     })
   })
 })
+
+
+// for follower
+router.get("/follow/:userid", isLoggedIn, async function (req, res) {
+  let followKarneWaala = await userModel.findOne({
+    username: req.session.passport.user,
+  });
+
+  let followHoneWaala = await userModel.findOne({ _id: req.params.userid });
+
+  if (followKarneWaala.following.indexOf(followHoneWaala._id) !== -1) {
+    let index = followKarneWaala.following.indexOf(followHoneWaala._id);
+    followKarneWaala.following.splice(index, 1);
+
+    let index2 = followHoneWaala.followers.indexOf(followKarneWaala._id);
+    followHoneWaala.followers.splice(index2, 1);
+  } else {
+    followHoneWaala.followers.push(followKarneWaala._id);
+    followKarneWaala.following.push(followHoneWaala._id);
+  }
+
+  await followHoneWaala.save();
+  await followKarneWaala.save();
+
+  //User ko usi page par wapas bhejta hai jahan se wo request bhej kar aaya tha.
+  res.redirect("back"); 
+});
+
+
+
+
+
+// another user profile 
+router.get("/profile/:user", isLoggedIn, async function (req, res) {
+  let user = await userModel.findOne({ username: req.session.passport.user });
+
+  if (user.username === req.params.user) {
+    res.redirect("/profile");
+  }
+
+  let userprofile = await userModel
+    .findOne({ username: req.params.user })
+    .populate("posts");
+
+  res.render("userprofile", { footer: true, userprofile, user });
+});
+
+
+
+
+// for saved
+router.get("/save/:postid", isLoggedIn, async function (req, res) {
+  let user = await userModel.findOne({ username: req.session.passport.user });
+
+  if (user.saved.indexOf(req.params.postid) === -1) {
+    user.saved.push(req.params.postid);
+  } else {
+    var index = user.saved.indexOf(req.params.postid);
+    user.saved.splice(index, 1);
+  }
+  await user.save();
+  res.redirect('/feed')
+});
+
 
 
 

@@ -14,7 +14,9 @@ const passport = require('passport');
 var app = express();
 
 // view engine setup
+// Ye line Express ko batati hai ke EJS templates (views) kis folder mein hain. Yahan views folder use ho raha hai jo project ke root mein hai.
 app.set('views', path.join(__dirname, 'views'));
+//🔹 Ye line Express ko batati hai ke EJS (Embedded JavaScript) ko templating engine ke طور par use karna hai.
 app.set('view engine', 'ejs');
 
 //server memory m temporray tor per user ka data persist rakhy ga, ye data store krna ka allow kr rha h
@@ -29,14 +31,28 @@ app.use(expressSession({
 app.use(passport.initialize());
 app.use(passport.session()); // is k wajah se data store ho rha h
 
+
+// detail in conecpt.txt
 passport.serializeUser(usersRouter.serializeUser());
 passport.deserializeUser(usersRouter.deserializeUser());
 
 app.use(logger('dev'));
 app.use(express.json());
+//Form data (URL-encoded) ko parse karta hai. Jab user koi form submit kare, to uska data samajhne ke liye.
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+//Public folder ko static bana deta hai — Yani CSS, JS, images jaise static files ko direct access milta hai browser se.
 app.use(express.static(path.join(__dirname, 'public')));
+
+/*
+logger → Console mein requests ka record.
+
+json() & urlencoded() → Client data ko parse karna.
+
+cookieParser() → Cookies ko handle karna.
+
+static() → Static files serve karna.
+*/
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

@@ -19,10 +19,12 @@ const multer = require('multer');
 const path = require('path'); // for file extension, in this context
 const {v4 : uuidv4} = require('uuid'); // for uinque id
 
+//🔹 File kahan save hogi → ./public/images/uploads folder mein.
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {   
     cb(null, './public/images/uploads')
   },
+  //🔹 File ka unique naam banaya ja raha hai using UUID + original file extension.
   filename: function (req, file, cb) {
    
     const uinqueFile = uuidv4();

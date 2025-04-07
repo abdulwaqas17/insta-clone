@@ -75,7 +75,14 @@
                   <i class="ri-share-circle-line"></i>
           </div>
           
-            <i data-postid="<%= post.id %>" class="save ri-bookmark-line"></i>
+            <a href="/save/<%= post._id %>">
+            <% if(userData.saved.includes(post._id)) {%>
+              <i data-postid="<%= post.id %>" class="save ri-bookmark-fill"></i>
+              <% } else { %>
+                <i data-postid="<%= post.id %>" class="save ri-bookmark-line"></i>
+                <% } %>
+
+            </a>
             
         </div>
 
